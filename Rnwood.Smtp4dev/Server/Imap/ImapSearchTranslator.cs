@@ -32,6 +32,7 @@ namespace Rnwood.Smtp4dev.Server.Imap
                 IMAP_Search_Key_Since since => HandleSince(since),
                 IMAP_Search_Key_Younger younger => HandleYounger(younger),
                 IMAP_Search_Key_Older older => HandleOlder(older),
+                IMAP_Search_Key_Uid uid => HandleUid(uid),
                 { } unknown => throw new ImapSearchCriteriaNotSupportedException($"The criteria '{unknown} is not supported'")
             };
         }
@@ -53,6 +54,10 @@ namespace Rnwood.Smtp4dev.Server.Imap
             // Capture the current time as a parameter that EF can properly translate
             var now = DateTime.Now;
             return m => m.ReceivedDate < now.AddSeconds(-older.Interval);
+        }
+        private Expression<Func<Message, bool>> HandleUid(IMAP_Search_Key_Uid uids)
+        {
+            return m => uids.Value.Contains(m.ImapUid);
         }
 
         private Expression<Func<Message, bool>> HandleNone()

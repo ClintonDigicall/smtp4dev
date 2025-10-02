@@ -290,6 +290,10 @@ namespace Rnwood.Smtp4dev.Server
                         {
                             ApiModel.Message apiMessage = new ApiModel.Message(dbMessage);
                             Mail_Message message = Mail_Message.ParseFromByte(apiMessage.Data);
+                            if (!message.Header.Contains("Message-Id"))
+                            {
+                                message.Header.Add(new LumiSoft.Net.MIME.MIME_h_Unstructured("Message-Id", $"<{dbMessage.Id}@{serverOptions.CurrentValue.HostName}>"));
+                            }
                             e.AddData(msgInfo, message);
                         }
                     }
